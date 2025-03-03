@@ -79,4 +79,11 @@ public class GreetingController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    // UC6: List all greetings
+    @GetMapping
+    public ResponseEntity<List<Greeting>> getAllGreetings() {
+        List<Greeting> greetings = greetingService.getAllGreetings();
+        return ResponseEntity.ok(greetings);
+    }
 }
