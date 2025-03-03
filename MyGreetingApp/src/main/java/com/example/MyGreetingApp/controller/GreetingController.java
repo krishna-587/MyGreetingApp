@@ -71,4 +71,12 @@ public class GreetingController {
         Greeting savedGreeting = greetingService.saveGreeting(greeting);
         return new ResponseEntity<>(savedGreeting, HttpStatus.CREATED);
     }
+
+    // UC5: Find greeting by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Greeting> getGreetingById(@PathVariable Long id) {
+        return greetingService.findGreetingById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }
