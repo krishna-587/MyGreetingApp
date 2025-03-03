@@ -3,7 +3,8 @@ package com.example.MyGreetingApp.service;
 
 import com.example.MyGreetingApp.model.Greeting;
 import com.example.MyGreetingApp.repository.GreetingRepository;
-
+import jakarta.persistence.EntityNotFoundException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,4 +56,17 @@ public class GreetingServiceImpl implements GreetingService {
     public List<Greeting> getAllGreetings() {
         return greetingRepository.findAll();
     }
+
+    @Override
+    public Greeting updateGreeting(Long id, @NotNull Greeting greetingDetails) {
+        Greeting greeting = greetingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Greeting not found with id: " + id));
+
+        greeting.setFirstName(greetingDetails.getFirstName());
+        greeting.setLastName(greetingDetails.getLastName());
+        greeting.setMessage(greetingDetails.getMessage());
+
+        return greetingRepository.save(greeting);
+    }
+
 }

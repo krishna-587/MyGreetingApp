@@ -9,9 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,5 +82,18 @@ public class GreetingController {
     public ResponseEntity<List<Greeting>> getAllGreetings() {
         List<Greeting> greetings = greetingService.getAllGreetings();
         return ResponseEntity.ok(greetings);
+    }
+
+    // UC7: Update greeting
+    @PutMapping("/{id}")
+    public ResponseEntity<Greeting> updateGreeting(
+            @PathVariable Long id,
+            @RequestBody Greeting greeting) {
+        try {
+            Greeting updatedGreeting = greetingService.updateGreeting(id, greeting);
+            return ResponseEntity.ok(updatedGreeting);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
