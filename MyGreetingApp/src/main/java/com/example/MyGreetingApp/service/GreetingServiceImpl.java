@@ -1,6 +1,7 @@
 package com.example.MyGreetingApp.service;
 
 
+import com.example.MyGreetingApp.model.Greeting;
 import com.example.MyGreetingApp.repository.GreetingRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +33,13 @@ public class GreetingServiceImpl implements GreetingService {
         } else {
             return getSimpleGreeting();
         }
+    }
+
+    @Override
+    public Greeting saveGreeting(@org.jetbrains.annotations.NotNull Greeting greeting) {
+        if (greeting.getMessage() == null) {
+            greeting.setMessage(getPersonalizedGreeting(greeting.getFirstName(), greeting.getLastName()));
+        }
+        return greetingRepository.save(greeting);
     }
 }

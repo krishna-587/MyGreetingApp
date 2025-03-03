@@ -64,4 +64,11 @@ public class GreetingController {
         String message = greetingService.getPersonalizedGreeting(firstName, lastName);
         return ResponseEntity.ok(Map.of("message", message));
     }
+
+    // UC4: Save greeting message
+    @PostMapping
+    public ResponseEntity<Greeting> createGreeting(@RequestBody Greeting greeting) {
+        Greeting savedGreeting = greetingService.saveGreeting(greeting);
+        return new ResponseEntity<>(savedGreeting, HttpStatus.CREATED);
+    }
 }
