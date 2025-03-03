@@ -1,10 +1,10 @@
 package com.example.MyGreetingApp.service;
 
+
 import com.example.MyGreetingApp.repository.GreetingRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class GreetingServiceImpl implements GreetingService {
@@ -23,7 +23,14 @@ public class GreetingServiceImpl implements GreetingService {
 
     @Override
     public String getPersonalizedGreeting(String firstName, String lastName) {
-        return "";
+        if (firstName != null && lastName != null) {
+            return "Hello " + firstName + " " + lastName;
+        } else if (firstName != null) {
+            return "Hello " + firstName;
+        } else if (lastName != null) {
+            return "Hello " + lastName;
+        } else {
+            return getSimpleGreeting();
+        }
     }
-
 }

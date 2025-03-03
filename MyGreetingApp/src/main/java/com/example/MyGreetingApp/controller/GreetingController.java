@@ -56,4 +56,12 @@ public class GreetingController {
         return ResponseEntity.ok(Map.of("message", message));
     }
 
+    // UC3: Personalized greeting based on user attributes
+    @GetMapping("/personalized")
+    public ResponseEntity<Map<String, String>> getPersonalizedGreeting(
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName) {
+        String message = greetingService.getPersonalizedGreeting(firstName, lastName);
+        return ResponseEntity.ok(Map.of("message", message));
+    }
 }
