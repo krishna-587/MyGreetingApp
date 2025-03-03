@@ -1,5 +1,16 @@
 package com.example.MyGreetingApp.controller;
 
+import com.example.MyGreetingApp.model.Greeting;
+import com.example.MyGreetingApp.service.GreetingService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,4 +40,20 @@ public class GreetingController {
         response.put("message", message);
         return response;
     }
+
+    private final GreetingService greetingService;
+
+    @Autowired
+    public GreetingController(GreetingService greetingService) {
+        this.greetingService = greetingService;
+    }
+
+    // UC2: Return JSON for different HTTP Methods
+
+    @GetMapping("/simple")
+    public ResponseEntity<Map<String, String>> getSimpleGreeting() {
+        String message = greetingService.getSimpleGreeting();
+        return ResponseEntity.ok(Map.of("message", message));
+    }
+
 }
