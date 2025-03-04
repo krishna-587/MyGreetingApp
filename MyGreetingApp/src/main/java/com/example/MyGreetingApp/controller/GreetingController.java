@@ -96,4 +96,15 @@ public class GreetingController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // UC8: Delete greeting
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteGreeting(@PathVariable Long id) {
+        try {
+            greetingService.deleteGreeting(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
