@@ -1,12 +1,12 @@
 package com.example.MyGreetingApp.service;
 
 import com.example.MyGreetingApp.DTOs.AuthUserDTO;
+import com.example.MyGreetingApp.DTOs.LoginDTO;
 import com.example.MyGreetingApp.model.AuthUser;
 import com.example.MyGreetingApp.repository.AuthUserRepository;
 import com.example.MyGreetingApp.Responses.ApiResponse;
 import com.example.MyGreetingApp.Responses.LoginResponse;
 import com.example.MyGreetingApp.security.JwtUtil;
-import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +58,30 @@ public class AuthenticationService {
         return new ResponseEntity<>(
                 new ApiResponse(true, "User registered successfully!"),
                 HttpStatus.CREATED);
+    }
+
+    public ResponseEntity<?> loginUser(LoginDTO loginDTO) {
+        try {
+            // Authenticate user
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginDTO.getEmail(),
+                            loginDTO.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>(
+                    new ApiResponse(false, "Invalid email or password!"),
+                    HttpStatus.UNAUTHORIZED);
+        }
+
+        // Generate JWT token
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(loginDTO.getEmail());
+        final String token = jwtUtil.generateToken(userDetails);
+
+        return new ResponseEntity<>(
+                new LoginResponse("Login successful!", token),
+                HttpStatus.OK);
     }
 
 }
