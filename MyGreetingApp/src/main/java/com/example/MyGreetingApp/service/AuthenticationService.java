@@ -7,6 +7,7 @@ import com.example.MyGreetingApp.repository.AuthUserRepository;
 import com.example.MyGreetingApp.Responses.ApiResponse;
 import com.example.MyGreetingApp.Responses.LoginResponse;
 import com.example.MyGreetingApp.security.JwtUtil;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,8 @@ public class AuthenticationService {
     @Autowired
     private JwtUtil jwtUtil;
 
-
+    @Autowired
+    private EmailService emailService;
 
     public ResponseEntity<?> registerUser(AuthUserDTO userDTO) {
         // Check if email already exists
@@ -54,6 +56,19 @@ public class AuthenticationService {
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
         userRepository.save(user);
+
+        // Send welcome email
+        try {
+            String emailBody = "<h1>Welcome to MyGreetingApp!</h1>"
+                    + "<p>Dear " + user.getFirstName() + ",</p>"
+                    + "<p>Thank you for registering with us.</p>"
+                    + "<p>Best regards,<br>MyGreetingApp Team</p>";
+
+            emailService.sendHtmlEmail(user.getEmail(), "Welcome to MyGreetingApp", emailBody);
+        } catch (MessagingException e) {
+            // Log error but continue - don't fail registration if email fails
+            System.err.println("Failed to send welcome email: " + e.getMessage());
+        }
 
         return new ResponseEntity<>(
                 new ApiResponse(true, "User registered successfully!"),
@@ -79,9 +94,20 @@ public class AuthenticationService {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(loginDTO.getEmail());
         final String token = jwtUtil.generateToken(userDetails);
 
+        // Send login notification
+        try {
+            emailService.sendSimpleEmail(
+                    loginDTO.getEmail(),
+                    "New Login to MyGreetingApp",
+                    "Dear user, we detected a new login to your account. If this wasn't you, please contact support."
+            );
+        } catch (Exception e) {
+            // Log error but continue - don't fail login if email fails
+            System.err.println("Failed to send login notification email: " + e.getMessage());
+        }
+
         return new ResponseEntity<>(
                 new LoginResponse("Login successful!", token),
                 HttpStatus.OK);
     }
-
 }

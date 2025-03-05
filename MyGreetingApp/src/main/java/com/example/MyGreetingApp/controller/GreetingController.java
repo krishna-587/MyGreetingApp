@@ -8,35 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/greetings")
+@Tag(name = "Greeting Controller", description = "Handles greeting messages")
 public class GreetingController {
-
-    // UC1: Return JSON for different HTTP Methods
-    @RequestMapping(value = {"/", "/hello"})
-    public Map<String, String> sayHello() {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Hello, how are you?");
-        return response;
-    }
-
-    @RequestMapping(value = "/goodbye", method = RequestMethod.GET)
-    public Map<String, String> sayGoodbye(@RequestParam(value = "name") String name) {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Goodbye " + name + "!");
-        return response;
-    }
-
-    @GetMapping("/param/{message}")
-    public Map<String, String> sayHelloMessage(@PathVariable String message) {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", message);
-        return response;
-    }
 
     private final GreetingService greetingService;
 
@@ -45,8 +26,7 @@ public class GreetingController {
         this.greetingService = greetingService;
     }
 
-    // UC2: Return JSON for different HTTP Methods
-
+    // UC1: Return JSON for different HTTP Methods
     @GetMapping("/simple")
     public ResponseEntity<Map<String, String>> getSimpleGreeting() {
         String message = greetingService.getSimpleGreeting();
