@@ -1,6 +1,7 @@
 package com.example.MyGreetingApp.service;
 
 import com.example.MyGreetingApp.DTOs.AuthUserDTO;
+import com.example.MyGreetingApp.DTOs.ForgotPasswordRequestDTO;
 import com.example.MyGreetingApp.DTOs.LoginDTO;
 import com.example.MyGreetingApp.model.AuthUser;
 import com.example.MyGreetingApp.repository.AuthUserRepository;
@@ -18,6 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class AuthenticationService {
@@ -109,5 +112,37 @@ public class AuthenticationService {
         return new ResponseEntity<>(
                 new LoginResponse("Login successful!", token),
                 HttpStatus.OK);
+    }
+
+    // forgot password
+    public ResponseEntity<?> changePassword(String email, String newPassword) {
+        Optional<AuthUser> temp = userRepository.findByEmail(email);
+
+        if (temp.isPresent()) {
+            AuthUser user = temp.get();
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+
+            // Send confirmation email
+            try {
+                emailService.sendSimpleEmail(
+                        user.getEmail(),
+                        "Password Changed Successfully",
+                        "Dear " + user.getFirstName() + ",\n\nYour password has been successfully changed. If this wasn't you, please contact support immediately."
+                );
+            } catch (Exception e) {
+                System.err.println("Failed to send password change confirmation email: " + e.getMessage());
+            }
+
+            return new ResponseEntity<>(
+                    new ApiResponse(true, "Password changed successfully!"),
+                    HttpStatus.OK
+            );
+        } else {
+            return new ResponseEntity<>(
+                    new ApiResponse(false, "User not found!"),
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.MyGreetingApp.controller;
 
 import com.example.MyGreetingApp.DTOs.AuthUserDTO;
+import com.example.MyGreetingApp.DTOs.ForgotPasswordRequestDTO;
 import com.example.MyGreetingApp.DTOs.LoginDTO;
 import com.example.MyGreetingApp.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,10 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -33,5 +31,11 @@ public class AuthController {
     @Operation(summary = "User login", description = "Login with email and password to get JWT token")
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginDTO loginDTO) {
         return authService.loginUser(loginDTO);
+    }
+
+    // UC12 : Forgot Password
+    @PostMapping("/forgotPassword/{email}")
+    public ResponseEntity<?> forgotPassword(@PathVariable String email, @RequestBody ForgotPasswordRequestDTO forgotPasswordRequestDTO) {
+        return authService.changePassword(email, forgotPasswordRequestDTO.getPassword());
     }
 }
