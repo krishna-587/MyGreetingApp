@@ -145,4 +145,47 @@ public class AuthenticationService {
             );
         }
     }
+
+    // Reset Password
+    public ResponseEntity<?> resetPassword(String email, String currentPassword, String newPassword) {
+        Optional<AuthUser> temp = userRepository.findByEmail(email);
+
+        if (temp.isPresent()) {
+            AuthUser user = temp.get();
+
+            // Check if the current password matches
+            if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+                return new ResponseEntity<>(
+                        new ApiResponse(false, "Current password is incorrect!"),
+                        HttpStatus.UNAUTHORIZED
+                );
+            }
+
+            // Update password
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+
+            // Send confirmation email
+            try {
+                emailService.sendSimpleEmail(
+                        user.getEmail(),
+                        "Password Reset Successful",
+                        "Dear " + user.getFirstName() + ",\n\nYour password has been successfully reset. If this wasn't you, please contact support immediately."
+                );
+            } catch (Exception e) {
+                System.err.println("Failed to send password reset confirmation email: " + e.getMessage());
+            }
+
+            return new ResponseEntity<>(
+                    new ApiResponse(true, "Password reset successfully!"),
+                    HttpStatus.OK
+            );
+        } else {
+            return new ResponseEntity<>(
+                    new ApiResponse(false, "User not found!"),
+                    HttpStatus.NOT_FOUND
+            );
+        }
+    }
+
 }

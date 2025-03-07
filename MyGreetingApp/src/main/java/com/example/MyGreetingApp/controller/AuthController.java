@@ -3,6 +3,7 @@ package com.example.MyGreetingApp.controller;
 import com.example.MyGreetingApp.DTOs.AuthUserDTO;
 import com.example.MyGreetingApp.DTOs.ForgotPasswordRequestDTO;
 import com.example.MyGreetingApp.DTOs.LoginDTO;
+import com.example.MyGreetingApp.DTOs.PasswordResetDTO;
 import com.example.MyGreetingApp.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,5 +38,12 @@ public class AuthController {
     @PostMapping("/forgotPassword/{email}")
     public ResponseEntity<?> forgotPassword(@PathVariable String email, @RequestBody ForgotPasswordRequestDTO forgotPasswordRequestDTO) {
         return authService.changePassword(email, forgotPasswordRequestDTO.getPassword());
+    }
+
+    // UC13 : Reset Password
+
+    @PostMapping("/resetPassword/{email}")
+    public ResponseEntity<?> resetPassword(@PathVariable String email, @RequestBody PasswordResetDTO passwordResetDTO){
+        return authService.resetPassword(email , passwordResetDTO.getCurrentPassword(), passwordResetDTO.getNewPassword());
     }
 }
